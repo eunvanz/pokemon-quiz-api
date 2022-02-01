@@ -1,8 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: isDev
+        ? 'http://localhost:4000'
+        : process.env.SERVICE_BASE_URL || 'https://www.pokeris.io',
+      credentials: true,
+    },
+    logger: ['error', 'warn', 'log'],
+  });
   await app.listen(3000);
 }
 bootstrap();
