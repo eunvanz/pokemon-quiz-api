@@ -6,9 +6,6 @@ export class Mon {
   id: number;
 
   @Column()
-  order: number;
-
-  @Column()
   names: string;
 
   @Column()
