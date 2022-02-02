@@ -29,4 +29,8 @@ export class MonsService {
       await this.monsRepository.save(mon);
     }, Promise);
   }
+
+  async getAllMons() {
+    return await this.monsRepository.find();
+  }
 }
