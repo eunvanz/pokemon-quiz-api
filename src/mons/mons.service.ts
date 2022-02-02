@@ -12,23 +12,21 @@ export class MonsService {
   ) {}
 
   async generateMons() {
-    const responses = await Promise.all(
-      Array.from({ length: 898 }).map((_, index) => {
-        return axios.get<any>(`https://pokeapi.co/api/v2/pokemon/${index + 1}`);
-      }),
-    );
-    responses
-      .map((res) => res.data)
-      .forEach(async (monData) => {
-        const { data } = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon-species/${monData.id}`,
-        );
-        const mon = {
-          id: monData.id,
-          names: data.names.map((name) => name.name).join(','),
-          image: monData.sprites.other['official-artwork'].front_default,
-        };
-        this.monsRepository.save(mon);
-      });
+    Array.from({ length: 898 }).reduce(async (prev, _, index) => {
+      await prev;
+      const { data: monData } = await axios.get<any>(
+        `https://pokeapi.co/api/v2/pokemon/${index + 1}`,
+      );
+      const { data } = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon-species/${monData.id}`,
+      );
+      const mon = {
+        id: monData.id,
+        names: data.names.map((name) => name.name).join(','),
+        image: monData.sprites.other['official-artwork'].front_default,
+      };
+      console.info('::::: Successfully generated', mon);
+      await this.monsRepository.save(mon);
+    }, Promise);
   }
 }
