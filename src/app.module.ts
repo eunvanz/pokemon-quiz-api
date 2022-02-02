@@ -10,7 +10,7 @@ import { typeOrmConfigAsync } from './config/typeorm.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     MonsModule,
