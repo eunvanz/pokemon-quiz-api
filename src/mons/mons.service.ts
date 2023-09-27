@@ -12,7 +12,7 @@ export class MonsService {
   ) {}
 
   async generateMons() {
-    Array.from({ length: 898 }).reduce(async (prev, _, index) => {
+    Array.from({ length: 1010 }).reduce(async (prev, _, index) => {
       await prev;
       const { data: monData } = await axios.get<any>(
         `https://pokeapi.co/api/v2/pokemon/${index + 1}`,
