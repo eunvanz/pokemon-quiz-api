@@ -17,6 +17,9 @@ export class Rank {
   @Column({ nullable: true })
   countryCode?: string;
 
+  @Column({ nullable: true })
+  ip?: string;
+
   @Column()
   generation: number;
 
