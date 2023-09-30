@@ -10,4 +10,10 @@ export class Mon {
 
   @Column()
   image: string;
+
+  @Column()
+  shownCnt: number;
+
+  @Column()
+  gottenCnt: number;
 }
