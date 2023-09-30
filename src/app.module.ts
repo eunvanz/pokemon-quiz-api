@@ -5,6 +5,7 @@ import { MonsModule } from './mons/mons.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfigAsync } from './config/typeorm.config';
+import { RankModule } from './rank/rank.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { typeOrmConfigAsync } from './config/typeorm.config';
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     MonsModule,
+    RankModule,
   ],
   controllers: [AppController],
   providers: [AppService],

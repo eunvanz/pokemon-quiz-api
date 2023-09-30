@@ -8,7 +8,7 @@ async function bootstrap() {
     cors: {
       origin: isDev
         ? 'http://localhost:4000'
-        : process.env.SERVICE_BASE_URL || 'https://www.pokeris.io',
+        : process.env.SERVICE_BASE_URL || 'https://www.pokedrops.io',
       credentials: true,
     },
     logger: ['error', 'warn', 'log'],
