@@ -32,12 +32,12 @@ export class Rank {
   @Column()
   maxCombo: number;
 
-  @Column()
+  @Column('double')
   avgSpeed: number;
 
-  @Column()
+  @Column('double')
   maxSpeed: number;
 
-  @Column()
+  @Column('double')
   accuracy: number;
 }
