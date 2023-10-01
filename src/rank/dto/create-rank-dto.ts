@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateRankDto {
   @IsString()
@@ -36,4 +36,7 @@ export class CreateRankDto {
 
   @IsNumber()
   accuracy: number;
+
+  @IsArray()
+  gotchaMons: number[];
 }

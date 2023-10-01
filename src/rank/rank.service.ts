@@ -20,7 +20,10 @@ export class RankService {
     const count = await this.rankRepository.count({
       score: MoreThanOrEqual(createRankDto.score),
     });
-    const result = await this.rankRepository.save(createRankDto);
+    const result = await this.rankRepository.save({
+      ...createRankDto,
+      gotchaMons: createRankDto.gotchaMons.join(','),
+    });
     return { ...result, seq: count + 1 };
   }
 
@@ -30,7 +33,11 @@ export class RankService {
       score: MoreThanOrEqual(result.score),
       id: Not(result.id),
     });
-    return { ...result, seq: count + 1 };
+    return {
+      ...result,
+      gotchaMons: result.gotchaMons.split(','),
+      seq: count + 1,
+    };
   }
 
   async getRankList(options: IPaginationOptions) {
@@ -44,9 +51,15 @@ export class RankService {
       options,
     );
     rawResults.forEach((item) => {
+      const camelizedItem = camelizeKeys(item);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      pagination.items.push(camelizeKeys(item));
+      pagination.items.push({
+        ...camelizedItem,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        gotchaMons: camelizedItem.gotchaMons?.split(','),
+      });
     });
     return pagination;
   }

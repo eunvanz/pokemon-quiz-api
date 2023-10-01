@@ -40,4 +40,7 @@ export class Rank {
 
   @Column('double')
   accuracy: number;
+
+  @Column('text', { nullable: true })
+  gotchaMons: string;
 }
