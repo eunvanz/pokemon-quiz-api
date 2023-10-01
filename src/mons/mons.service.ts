@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Mon } from './mons.entity';
+import { UpdateMonCountDto } from './dto/update-mon-count-dto';
 
 @Injectable()
 export class MonsService {
@@ -32,5 +33,29 @@ export class MonsService {
 
   async getAllMons() {
     return await this.monsRepository.find();
+  }
+
+  async patchMonCounts({ result }: UpdateMonCountDto) {
+    await this.monsRepository
+      .createQueryBuilder('mon')
+      .update()
+      .set({
+        shownCnt: () => 'shownCnt + 1',
+        gottenCnt: () => 'gottenCnt + 1',
+      })
+      .where('mon.id = :id', {
+        id: result.filter((item) => item.isGotten).map((item) => item.id),
+      })
+      .execute();
+    await this.monsRepository
+      .createQueryBuilder('mon')
+      .update()
+      .set({
+        shownCnt: () => 'shownCnt + 1',
+      })
+      .where('mon.id = :id', {
+        id: result.filter((item) => !item.isGotten).map((item) => item.id),
+      })
+      .execute();
   }
 }

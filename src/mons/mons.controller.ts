@@ -1,5 +1,6 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { MonsService } from './mons.service';
+import { UpdateMonCountDto } from './dto/update-mon-count-dto';
 
 @Controller('mons')
 export class MonsController {
@@ -13,5 +14,10 @@ export class MonsController {
   @Get()
   async getAllMons() {
     return await this.monsService.getAllMons();
+  }
+
+  @Patch()
+  async patchMonCounts(@Body() updateMonCountDto: UpdateMonCountDto) {
+    return await this.monsService.patchMonCounts(updateMonCountDto);
   }
 }
