@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Rank } from './rank.entity';
 import { MoreThanOrEqual, Not, Repository } from 'typeorm';
@@ -29,13 +29,16 @@ export class RankService {
 
   async findOne(id: number) {
     const result = await this.rankRepository.findOne(id);
+    if (!result) {
+      throw new NotFoundException();
+    }
     const count = await this.rankRepository.count({
       score: MoreThanOrEqual(result.score),
       id: Not(result.id),
     });
     return {
       ...result,
-      gotchaMons: result.gotchaMons.split(','),
+      gotchaMons: result.gotchaMons.split(',').map(Number),
       seq: count + 1,
     };
   }
@@ -58,7 +61,7 @@ export class RankService {
         ...camelizedItem,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        gotchaMons: camelizedItem.gotchaMons?.split(','),
+        gotchaMons: camelizedItem.gotchaMons?.split(',').map(Number),
       });
     });
     return pagination;
