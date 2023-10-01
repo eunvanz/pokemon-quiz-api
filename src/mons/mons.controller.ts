@@ -16,7 +16,7 @@ export class MonsController {
     return await this.monsService.getAllMons();
   }
 
-  @Patch()
+  @Patch('count')
   async patchMonCounts(@Body() updateMonCountDto: UpdateMonCountDto) {
     return await this.monsService.patchMonCounts(updateMonCountDto);
   }

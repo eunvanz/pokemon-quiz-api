@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Mon } from './mons.entity';
 import { UpdateMonCountDto } from './dto/update-mon-count-dto';
 
@@ -40,10 +40,10 @@ export class MonsService {
       .createQueryBuilder('mon')
       .update()
       .set({
-        shownCnt: () => 'shownCnt + 1',
-        gottenCnt: () => 'gottenCnt + 1',
+        shownCnt: () => 'shown_cnt + 1',
+        gottenCnt: () => 'gotten_cnt + 1',
       })
-      .where('mon.id = :id', {
+      .where('mon.id IN (:id)', {
         id: result.filter((item) => item.isGotten).map((item) => item.id),
       })
       .execute();
@@ -51,9 +51,9 @@ export class MonsService {
       .createQueryBuilder('mon')
       .update()
       .set({
-        shownCnt: () => 'shownCnt + 1',
+        shownCnt: () => 'shown_cnt + 1',
       })
-      .where('mon.id = :id', {
+      .where('mon.id IN (:id)', {
         id: result.filter((item) => !item.isGotten).map((item) => item.id),
       })
       .execute();
