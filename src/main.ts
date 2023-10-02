@@ -13,6 +13,6 @@ async function bootstrap() {
     },
     logger: ['error', 'warn', 'log'],
   });
-  await app.listen(isDev ? 4000 : 8080);
+  await app.listen(isDev ? 4000 : process.env.PORT || 8080);
 }
 bootstrap();
