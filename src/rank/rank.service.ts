@@ -24,7 +24,11 @@ export class RankService {
       ...createRankDto,
       gotchaMons: createRankDto.gotchaMons.join(','),
     });
-    return { ...result, seq: count + 1 };
+    return {
+      ...result,
+      gotchaMons: result.gotchaMons.split(',').map(Number),
+      seq: count + 1,
+    };
   }
 
   async findOne(id: number) {
