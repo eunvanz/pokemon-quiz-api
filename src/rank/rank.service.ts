@@ -47,15 +47,26 @@ export class RankService {
     };
   }
 
-  async getRankList(options: IPaginationOptions) {
+  async getRankList({
+    name,
+    ...pageOptions
+  }: IPaginationOptions & { name: string }) {
     const queryBuilder = this.rankRepository
       .createQueryBuilder()
-      .select('*')
-      .addSelect('RANK() OVER(ORDER BY score DESC)', 'seq')
+      .select('b.*')
+      .from(
+        (qb) =>
+          qb
+            .select('a.*')
+            .addSelect('RANK() OVER(ORDER BY score DESC)', 'seq')
+            .from(Rank, 'a'),
+        'b',
+      )
+      .where('b.name like :name', { name: `%${name}%` })
       .orderBy('seq', 'ASC');
     const [pagination, rawResults] = await paginateRawAndEntities(
       queryBuilder,
-      options,
+      pageOptions,
     );
     rawResults.forEach((item) => {
       const camelizedItem = camelizeKeys(item);

@@ -28,8 +28,9 @@ export class RankController {
   @Get()
   async getRankList(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
+    @Query('limit', new DefaultValuePipe(30), ParseIntPipe) limit = 30,
+    @Query('name') name: string,
   ) {
-    return await this.rankService.getRankList({ page, limit });
+    return await this.rankService.getRankList({ page, limit, name });
   }
 }
