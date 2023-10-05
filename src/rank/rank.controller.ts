@@ -29,8 +29,17 @@ export class RankController {
   async getRankList(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(30), ParseIntPipe) limit = 30,
-    @Query('name') name: string,
+    @Query('name') name?: string,
+    @Query('country') country?: string,
+    @Query('generation', new DefaultValuePipe(-1), ParseIntPipe)
+    generation = -1,
   ) {
-    return await this.rankService.getRankList({ page, limit, name });
+    return await this.rankService.getRankList({
+      page,
+      limit,
+      name,
+      country,
+      generation,
+    });
   }
 }

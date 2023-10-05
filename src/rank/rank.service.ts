@@ -46,8 +46,14 @@ export class RankService {
 
   async getRankList({
     name,
+    country,
+    generation,
     ...pageOptions
-  }: IPaginationOptions & { name: string }) {
+  }: IPaginationOptions & {
+    name?: string;
+    country?: string;
+    generation: number;
+  }) {
     const queryBuilder = createQueryBuilder()
       .select('b.*')
       .from(
@@ -60,8 +66,23 @@ export class RankService {
       )
       .orderBy('seq', 'ASC');
 
+    console.log('===== generation', generation);
     if (name?.trim()) {
-      queryBuilder.where('b.name like :name', { name: `%${name}%` });
+      queryBuilder.andWhere('UPPER(b.name) like UPPER(:name)', {
+        name: `%${name}%`,
+      });
+    }
+
+    if (country?.trim()) {
+      queryBuilder.andWhere('UPPER(b.country) like UPPER(:country)', {
+        country: `%${country}%`,
+      });
+    }
+
+    if (generation > -1) {
+      queryBuilder.andWhere('b.generation = :generation', {
+        generation,
+      });
     }
 
     const rawResult = await paginateRaw(queryBuilder, pageOptions);
