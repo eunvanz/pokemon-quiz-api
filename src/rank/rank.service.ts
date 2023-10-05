@@ -1,12 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Rank } from './rank.entity';
-import { MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { MoreThanOrEqual, Not, Repository, createQueryBuilder } from 'typeorm';
 import { CreateRankDto } from './dto/create-rank-dto';
-import {
-  IPaginationOptions,
-  paginateRawAndEntities,
-} from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
 import { camelizeKeys } from 'humps';
 
 @Injectable()
@@ -51,8 +48,7 @@ export class RankService {
     name,
     ...pageOptions
   }: IPaginationOptions & { name: string }) {
-    const queryBuilder = this.rankRepository
-      .createQueryBuilder()
+    const queryBuilder = createQueryBuilder()
       .select('b.*')
       .from(
         (qb) =>
@@ -62,23 +58,24 @@ export class RankService {
             .from(Rank, 'a'),
         'b',
       )
-      .where('b.name like :name', { name: `%${name}%` })
       .orderBy('seq', 'ASC');
-    const [pagination, rawResults] = await paginateRawAndEntities(
-      queryBuilder,
-      pageOptions,
-    );
-    rawResults.forEach((item) => {
+
+    if (name?.trim()) {
+      queryBuilder.where('b.name like :name', { name: `%${name}%` });
+    }
+
+    const rawResult = await paginateRaw(queryBuilder, pageOptions);
+    const enhancedItems = rawResult.items.map((item) => {
       const camelizedItem = camelizeKeys(item);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      pagination.items.push({
+      return {
         ...camelizedItem,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         gotchaMons: camelizedItem.gotchaMons?.split(',').map(Number),
-      });
+      };
     });
-    return pagination;
+    return { ...rawResult, items: enhancedItems };
   }
 }
