@@ -56,29 +56,33 @@ export class RankService {
     generation: number;
     isUniqueName?: boolean;
   }) {
-    console.log('===== isUniqueName', isUniqueName);
     const queryBuilder = createQueryBuilder()
       .select('b.*')
-      .from(
-        (qb) =>
-          qb
+      .from((qb) => {
+        if (isUniqueName) {
+          return qb
             .select('a.*')
             .addSelect('RANK() OVER(ORDER BY score DESC)', 'seq')
-            .from(
-              isUniqueName
-                ? (qb) =>
-                    qb
-                      .select(
-                        'c.id, c.name, c.country, c.city, c.country_code, c.generation, c.gotcha, c.max_combo, c.ip, c.avg_speed, c.max_speed, c.accuracy, c.gotcha_mons',
-                      )
-                      .addSelect('MAX(c.score) score')
-                      .from(Rank, 'c')
-                      .groupBy('name')
-                : Rank,
-              'a',
-            ),
-        'b',
-      )
+            .from(Rank, 'a')
+            .innerJoin(
+              (qb) =>
+                qb
+                  .select(
+                    'c.id, c.name, c.country, c.city, c.country_code, c.generation, c.gotcha, c.max_combo, c.ip, c.avg_speed, c.max_speed, c.accuracy, c.gotcha_mons',
+                  )
+                  .addSelect('MAX(c.score) score')
+                  .from(Rank, 'c')
+                  .groupBy('name'),
+              'd',
+              'a.name = d.name AND a.score = d.score',
+            );
+        } else {
+          return qb
+            .select('a.*')
+            .addSelect('RANK() OVER(ORDER BY score DESC)', 'seq')
+            .from(Rank, 'a');
+        }
+      }, 'b')
       .orderBy('seq', 'ASC');
 
     if (name?.trim()) {
