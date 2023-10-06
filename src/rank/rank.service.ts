@@ -48,12 +48,15 @@ export class RankService {
     name,
     country,
     generation,
+    isUniqueName,
     ...pageOptions
   }: IPaginationOptions & {
     name?: string;
     country?: string;
     generation: number;
+    isUniqueName?: boolean;
   }) {
+    console.log('===== isUniqueName', isUniqueName);
     const queryBuilder = createQueryBuilder()
       .select('b.*')
       .from(
@@ -61,12 +64,23 @@ export class RankService {
           qb
             .select('a.*')
             .addSelect('RANK() OVER(ORDER BY score DESC)', 'seq')
-            .from(Rank, 'a'),
+            .from(
+              isUniqueName
+                ? (qb) =>
+                    qb
+                      .select(
+                        'c.id, c.name, c.country, c.city, c.country_code, c.generation, c.gotcha, c.max_combo, c.ip, c.avg_speed, c.max_speed, c.accuracy, c.gotcha_mons',
+                      )
+                      .addSelect('MAX(c.score) score')
+                      .from(Rank, 'c')
+                      .groupBy('name')
+                : Rank,
+              'a',
+            ),
         'b',
       )
       .orderBy('seq', 'ASC');
 
-    console.log('===== generation', generation);
     if (name?.trim()) {
       queryBuilder.andWhere('UPPER(b.name) like UPPER(:name)', {
         name: `%${name}%`,

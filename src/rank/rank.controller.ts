@@ -4,6 +4,7 @@ import {
   DefaultValuePipe,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Query,
@@ -33,6 +34,8 @@ export class RankController {
     @Query('country') country?: string,
     @Query('generation', new DefaultValuePipe(-1), ParseIntPipe)
     generation = -1,
+    @Query('isUniqueName', new DefaultValuePipe(true), ParseBoolPipe)
+    isUniqueName = true,
   ) {
     return await this.rankService.getRankList({
       page,
@@ -40,6 +43,7 @@ export class RankController {
       name,
       country,
       generation,
+      isUniqueName,
     });
   }
 }
